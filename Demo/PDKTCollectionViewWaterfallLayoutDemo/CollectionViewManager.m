@@ -67,7 +67,7 @@ static NSUInteger const kNumberItemsPerSection = 10;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return kNumberItemsPerSection;
+    return section == 2 ? 0 : kNumberItemsPerSection;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{

@@ -85,19 +85,28 @@
         self.supplementaryViewsAttibutes[section] = [NSMutableDictionary dictionary];
         
         
-        [self loadSectionHeaderAttributesInSection:section];        
-        for (NSInteger idx = 0; idx < sectionItemsCount; idx++) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:idx inSection:section];
-            CGFloat itemHeight=[self itemHeightWithItemWidth:itemWidth AtIndexPath:indexPath];
-            NSUInteger columnIndex = [self shortestColumnIndexInSection:section];
-            CGFloat xOffset=sectionInset.left + ((itemWidth + itemSpacing) * columnIndex);
-            CGFloat yOffset = [self verticalOffsetForItemAtColumn:columnIndex section:section sectionInset:sectionInset itemSpacing:itemSpacing];
-            UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            attributes.frame = CGRectMake(xOffset, yOffset, itemWidth, itemHeight);
-            attributes.zIndex = 1;
-            [self.itemAttributes[section] addObject:attributes];
-            self.columnHeights[section][columnIndex] = @(yOffset + itemHeight);
+        [self loadSectionHeaderAttributesInSection:section];
+        
+        if (sectionItemsCount == 0) {
+            for (NSInteger idx = 0; idx < columnCountInSection; idx++) {
+                CGFloat yOffset = [self verticalOffsetForItemAtColumn:idx section:section sectionInset:sectionInset itemSpacing:itemSpacing];
+                self.columnHeights[section][idx] = @(yOffset);
+            }
+        } else {
+            for (NSInteger idx = 0; idx < sectionItemsCount; idx++) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForItem:idx inSection:section];
+                CGFloat itemHeight=[self itemHeightWithItemWidth:itemWidth AtIndexPath:indexPath];
+                NSUInteger columnIndex = [self shortestColumnIndexInSection:section];
+                CGFloat xOffset=sectionInset.left + ((itemWidth + itemSpacing) * columnIndex);
+                CGFloat yOffset = [self verticalOffsetForItemAtColumn:columnIndex section:section sectionInset:sectionInset itemSpacing:itemSpacing];
+                UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+                attributes.frame = CGRectMake(xOffset, yOffset, itemWidth, itemHeight);
+                attributes.zIndex = 1;
+                [self.itemAttributes[section] addObject:attributes];
+                self.columnHeights[section][columnIndex] = @(yOffset + itemHeight);
+            }
         }
+        
         [self loadSectionFooterAttributesInSection:section];
     }
 }
