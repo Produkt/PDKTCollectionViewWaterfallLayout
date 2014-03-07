@@ -28,5 +28,9 @@ If you are using Interface Builder to configure your Collection View, simply swi
 - ```PDKTCollectionViewWaterfallLayout``` is compatible with iOS6.0+
 - ```PDKTCollectionViewWaterfallLayout``` requires ARC.
 
+## Contributors
+
+Special thanks to [@caldofran](https://github.com/caldofran) for his contributions
+
 ## License
 `PDKTCollectionViewWaterfallLayout ` is available under the MIT license. See the LICENSE file for more info.
