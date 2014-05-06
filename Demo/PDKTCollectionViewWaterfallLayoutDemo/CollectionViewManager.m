@@ -143,4 +143,7 @@ static NSUInteger const kNumberItemsPerSection = 10;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout sizeForSupplementaryViewInSection:(NSUInteger)section kind:(NSString *)kind{
     return CGSizeMake(self.collectionView.bounds.size.width, 60);
 }
+- (BOOL)shouldStickHeaderToTopInSection:(NSUInteger)section{
+    return YES;
+}
 @end
