@@ -17,16 +17,14 @@
 @implementation PDKTCollectionViewWaterfallLayout
 
 #pragma mark - Accessors
-- (void)setColumnCount:(NSUInteger)columnCount
-{
+- (void)setColumnCount:(NSUInteger)columnCount{
     if (_columnCount != columnCount) {
         _columnCount = columnCount;
         [self invalidateLayout];
     }
 }
 
-- (void)setSectionInset:(UIEdgeInsets)sectionInset
-{
+- (void)setSectionInset:(UIEdgeInsets)sectionInset{
     if (!UIEdgeInsetsEqualToEdgeInsets(_sectionInset, sectionInset)) {
         _sectionInset = sectionInset;
         [self invalidateLayout];
@@ -34,8 +32,7 @@
 }
 
 #pragma mark - Init
-- (void)commonInit
-{
+- (void)commonInit{
     _columnCount = 2;
     _itemSpacing = 0.0;
     _sectionInset = UIEdgeInsetsZero;
@@ -43,10 +40,7 @@
         _delegate = (id<PDKTCollectionViewWaterfallLayoutDelegate>)self.collectionView.delegate;
     }
 }
-
-#pragma mark - Methods to Override
-- (void)prepareLayout
-{
+- (void)prepareLayout{
     [super prepareLayout];
     [self commonInit];
     self.itemCount=[self totalItemsCountInCollectionView];
@@ -55,6 +49,89 @@
         [self calculateItemsGeometryInSection:section];
     }
 }
+- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect{
+    NSMutableArray *attributes = [NSMutableArray arrayWithArray:[super layoutAttributesForElementsInRect:rect]];
+    [self addVisibleItemAttributesToLayoutAttributes:attributes inRect:rect];
+    [self addVisibleSupplementaryViewsAttributesToLayoutAttributes:attributes inRect:rect];
+    [self addVisibleHeadersToLayoutAttributes:attributes fromVisibleSectionsWithoutHeader:[self visibleSectionsWithoutHeaderInAttributes:attributes]];
+    [self updateStickedHeadersAttributesInLayoutAttributes:attributes];
+    return attributes;
+}
+- (void)addVisibleItemAttributesToLayoutAttributes:(NSMutableArray *)attributes inRect:(CGRect)rect{
+    for (NSArray *itemAttributesArray in self.itemAttributes) {
+        NSArray *filteredAttributes=[itemAttributesArray filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
+            return CGRectIntersectsRect(rect, [evaluatedObject frame]);
+        }]];
+        [attributes addObjectsFromArray:filteredAttributes];
+    }
+}
+- (void)addVisibleSupplementaryViewsAttributesToLayoutAttributes:(NSMutableArray *)attributes inRect:(CGRect)rect{
+    for (NSDictionary *itemAttributesArray in self.supplementaryViewsAttibutes) {
+        if (itemAttributesArray) {
+            NSArray *filteredAttributes=[[itemAttributesArray allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
+                return CGRectIntersectsRect(rect, [evaluatedObject frame]);
+            }]];
+            [attributes addObjectsFromArray:filteredAttributes];
+        }
+    }
+}
+- (NSArray *)visibleSectionsWithoutHeaderInAttributes:(NSArray *)attributes{
+    NSMutableArray *visibleSectionsWithoutHeader = [NSMutableArray array];
+    for (UICollectionViewLayoutAttributes *itemAttributes in attributes) {
+        if (![visibleSectionsWithoutHeader containsObject:[NSNumber numberWithInteger:itemAttributes.indexPath.section]]) {
+            [visibleSectionsWithoutHeader addObject:[NSNumber numberWithInteger:itemAttributes.indexPath.section]];
+        }
+        if (itemAttributes.representedElementKind==UICollectionElementKindSectionHeader) {
+            NSUInteger indexOfSectionObject=[visibleSectionsWithoutHeader indexOfObject:[NSNumber numberWithInteger:itemAttributes.indexPath.section]];
+            if (indexOfSectionObject!=NSNotFound) {
+                [visibleSectionsWithoutHeader removeObjectAtIndex:indexOfSectionObject];
+            }
+        }
+    }
+    return visibleSectionsWithoutHeader;
+}
+- (void)addVisibleHeadersToLayoutAttributes:(NSMutableArray *)attributes fromVisibleSectionsWithoutHeader:(NSArray *)visibleSectionsWithoutHeader{
+    for (NSNumber *sectionNumber in visibleSectionsWithoutHeader) {
+        if ([self shouldStickHeaderToTopInSection:[sectionNumber integerValue]]) {
+            UICollectionViewLayoutAttributes *headerAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:[sectionNumber integerValue]]];
+            if (headerAttributes.frame.size.width>0 && headerAttributes.frame.size.height>0) {
+                [attributes addObject:headerAttributes];
+            }
+        }
+    }
+}
+- (void)updateStickedHeadersAttributesInLayoutAttributes:(NSMutableArray *)attributes{
+    for (UICollectionViewLayoutAttributes *itemAttributes in attributes) {
+        if (itemAttributes.representedElementKind==UICollectionElementKindSectionHeader) {
+            UICollectionViewLayoutAttributes *headerAttributes = itemAttributes;
+            if ([self shouldStickHeaderToTopInSection:headerAttributes.indexPath.section]) {
+                CGPoint contentOffset = self.collectionView.contentOffset;
+                CGPoint originInCollectionView=CGPointMake(headerAttributes.frame.origin.x-contentOffset.x, headerAttributes.frame.origin.y-contentOffset.y);
+                originInCollectionView.y-=self.collectionView.contentInset.top;
+                CGRect frame = headerAttributes.frame;
+                if (originInCollectionView.y<0) {
+                    frame.origin.y+=(originInCollectionView.y*-1);
+                }
+                UICollectionViewLayoutAttributes *sameSectionFooterAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section]];
+                CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
+                if (CGRectGetMaxY(frame)>=maxY) {
+                    frame.origin.y=maxY-frame.size.height;
+                }
+                NSUInteger numberOfSections=[self.collectionView.dataSource numberOfSectionsInCollectionView:self.collectionView];
+                if (numberOfSections>headerAttributes.indexPath.section+1) {
+                    UICollectionViewLayoutAttributes *nextHeaderAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section+1]];
+                    CGFloat maxY=nextHeaderAttributes.frame.origin.y;
+                    if (CGRectGetMaxY(frame)>=maxY) {
+                        frame.origin.y=maxY-frame.size.height;
+                    }
+                }
+                headerAttributes.frame = frame;
+            }
+            headerAttributes.zIndex = 1024;
+        }
+    }
+}
+
 - (NSUInteger)totalItemsCountInCollectionView{
     NSUInteger itemsCount = 0;
     for (NSInteger i=0; i<[self.collectionView numberOfSections];i++) {
@@ -71,7 +148,7 @@
 
 - (void)calculateItemsGeometryInSection:(NSUInteger)section{
     NSUInteger columnCountInSection = [self.delegate collectionView:self.collectionView layout:self numberOfColumnsInSection:section];
-    if(columnCountInSection>0){
+    if(columnCountInSection){
         UIEdgeInsets sectionInset=[self insetsForSection:section];
         CGFloat itemSpacing=[self itemSpacingInSection:section];
         CGFloat itemWidth=floorf((self.collectionView.bounds.size.width-sectionInset.left-sectionInset.right-((columnCountInSection-1)*itemSpacing))/(CGFloat)columnCountInSection);
@@ -202,32 +279,9 @@
     return contentSize;
 }
 
-- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
-{
-    NSMutableArray *elementsInRectArray = [NSMutableArray arrayWithArray:[super layoutAttributesForElementsInRect:rect]];
-    
-    for (NSArray *itemAttributesArray in self.itemAttributes) {
-        NSArray *filteredAttributes=[itemAttributesArray filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
-            return CGRectIntersectsRect(rect, [evaluatedObject frame]);
-        }]];
-        [elementsInRectArray addObjectsFromArray:filteredAttributes];
-    }
-    
-    for (NSDictionary *itemAttributesArray in self.supplementaryViewsAttibutes) {
-        if (itemAttributesArray) {
-            NSArray *filteredAttributes=[[itemAttributesArray allValues] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
-                return CGRectIntersectsRect(rect, [evaluatedObject frame]);
-            }]];
-            [elementsInRectArray addObjectsFromArray:filteredAttributes];
-        }
-    }
-    
-    return elementsInRectArray;
-}
-
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    return !CGSizeEqualToSize(self.collectionView.bounds.size, newBounds.size);
+    return YES;
 }
 
 #pragma mark - Private Methods
@@ -257,7 +311,6 @@
     return itemSpacing;
 }
 
-// Find out shortest column.
 - (NSUInteger)shortestColumnIndexInSection:(NSUInteger)section
 {
     NSUInteger index = 0;
@@ -275,7 +328,7 @@
     }
     return index;
 }
-// Find out longest column in Section.
+
 - (NSUInteger)longestColumnIndexInSection:(NSUInteger)section
 {
     NSUInteger index = 0;
@@ -305,6 +358,15 @@
         NSAssert(NO, @"Invalid supplementary view kind (%@)",kind);
         return nil;
     }
+}
+
+#pragma mark - Sticky Header
+
+- (BOOL)shouldStickHeaderToTopInSection:(NSUInteger)section{
+    if ([self.collectionView.delegate respondsToSelector:@selector(shouldStickHeaderToTopInSection:)]) {
+        return [((id<PDKTCollectionViewWaterfallLayoutDelegate>)self.collectionView.delegate) shouldStickHeaderToTopInSection:section];
+    }
+    return NO;
 }
 
 @end

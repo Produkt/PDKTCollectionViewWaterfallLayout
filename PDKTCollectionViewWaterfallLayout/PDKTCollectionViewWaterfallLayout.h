@@ -18,10 +18,10 @@
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout aspectRatioForIndexPath:(NSIndexPath *)indexPath;
 
 
-
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout itemSpacingInSection:(NSUInteger)section;
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout sectionInsetForSection:(NSUInteger)section;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout sizeForSupplementaryViewInSection:(NSUInteger)section kind:(NSString *)kind;
+- (BOOL)shouldStickHeaderToTopInSection:(NSUInteger)section;
 @end
 
 @interface PDKTCollectionViewWaterfallLayout : UICollectionViewLayout
