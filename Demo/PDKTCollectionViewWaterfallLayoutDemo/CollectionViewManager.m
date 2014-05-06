@@ -108,7 +108,7 @@ static NSUInteger const kNumberItemsPerSection = 10;
     NSString *sectionFooterTitle=[NSString stringWithFormat:@"Section Footer %d",indexPath.section];
     sectionFooterView.titleLabel.text=sectionFooterTitle;
     sectionFooterView.titleLabel.textColor=[UIColor whiteColor];
-    sectionFooterView.backgroundColor=[UIColor blackColor];
+    sectionFooterView.backgroundColor=[UIColor grayColor];
     return sectionFooterView;
 }
 
