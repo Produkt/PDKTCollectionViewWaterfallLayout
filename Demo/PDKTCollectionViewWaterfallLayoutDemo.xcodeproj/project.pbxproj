@@ -29,7 +29,7 @@
 		88A96E6D188C318900E67884 /* PDKTCollectionViewWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A96E6C188C318900E67884 /* PDKTCollectionViewWaterfallLayout.m */; };
 		88A96E70188C357200E67884 /* CollectionViewSectionFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 88A96E6F188C357200E67884 /* CollectionViewSectionFooter.m */; };
 		88A96E72188C359100E67884 /* CollectionViewSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88A96E71188C359100E67884 /* CollectionViewSectionFooter.xib */; };
-		88AD059B192140270018DF65 /* PDKTCollectionViewWaterfallLayout.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 88AD059A192140270018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */; };
+		88AD059D192140880018DF65 /* PDKTCollectionViewWaterfallLayout.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 88AD059C192140880018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +75,7 @@
 		88A96E6E188C357200E67884 /* CollectionViewSectionFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewSectionFooter.h; sourceTree = "<group>"; };
 		88A96E6F188C357200E67884 /* CollectionViewSectionFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewSectionFooter.m; sourceTree = "<group>"; };
 		88A96E71188C359100E67884 /* CollectionViewSectionFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CollectionViewSectionFooter.xib; sourceTree = "<group>"; };
-		88AD059A192140270018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PDKTCollectionViewWaterfallLayout.podspec; sourceTree = "<group>"; };
+		88AD059C192140880018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PDKTCollectionViewWaterfallLayout.podspec; path = ../PDKTCollectionViewWaterfallLayout.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 		88A96E14188C24C600E67884 = {
 			isa = PBXGroup;
 			children = (
-				88AD059A192140270018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */,
+				88AD059C192140880018DF65 /* PDKTCollectionViewWaterfallLayout.podspec */,
 				88A96E26188C24C600E67884 /* PDKTCollectionViewWaterfallLayoutDemo */,
 				88A96E3F188C24C600E67884 /* PDKTCollectionViewWaterfallLayoutDemoTests */,
 				88A96E1F188C24C600E67884 /* Frameworks */,
@@ -278,7 +278,7 @@
 				88A96E2B188C24C600E67884 /* InfoPlist.strings in Resources */,
 				88A96E61188C255000E67884 /* CollectionViewSectionHeader.xib in Resources */,
 				88A96E33188C24C600E67884 /* Images.xcassets in Resources */,
-				88AD059B192140270018DF65 /* PDKTCollectionViewWaterfallLayout.podspec in Resources */,
+				88AD059D192140880018DF65 /* PDKTCollectionViewWaterfallLayout.podspec in Resources */,
 				88A96E5E188C255000E67884 /* CollectionViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
