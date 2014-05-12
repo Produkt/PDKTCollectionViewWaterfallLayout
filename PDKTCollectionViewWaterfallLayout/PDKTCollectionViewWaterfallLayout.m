@@ -105,13 +105,15 @@
         if (itemAttributes.representedElementKind==UICollectionElementKindSectionHeader) {
             UICollectionViewLayoutAttributes *headerAttributes = itemAttributes;
             if ([self shouldStickHeaderToTopInSection:headerAttributes.indexPath.section]) {
+                CGRect frame = headerAttributes.frame;
+                
                 CGPoint contentOffset = self.collectionView.contentOffset;
                 CGPoint originInCollectionView=CGPointMake(headerAttributes.frame.origin.x-contentOffset.x, headerAttributes.frame.origin.y-contentOffset.y);
                 originInCollectionView.y-=self.collectionView.contentInset.top;
-                CGRect frame = headerAttributes.frame;
                 if (originInCollectionView.y<0) {
                     frame.origin.y+=(originInCollectionView.y*-1);
                 }
+                
                 UICollectionViewLayoutAttributes *sameSectionFooterAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section]];
                 if (sameSectionFooterAttributes) {
                     CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
@@ -126,6 +128,11 @@
                     if (CGRectGetMaxY(frame)>=maxY) {
                         frame.origin.y=maxY-frame.size.height;
                     }
+                }
+                NSUInteger longestColumnIndex = [self longestColumnIndexInSection:headerAttributes.indexPath.section];
+                CGFloat maxYOffsetInSection=[(self.columnHeights[headerAttributes.indexPath.section][longestColumnIndex]) floatValue] + [self insetsForSection:headerAttributes.indexPath.section].bottom;
+                if (CGRectGetMaxY(frame)>=maxYOffsetInSection) {
+                    frame.origin.y=maxYOffsetInSection-frame.size.height;
                 }
                 headerAttributes.frame = frame;
             }
