@@ -105,31 +105,55 @@
         if (itemAttributes.representedElementKind==UICollectionElementKindSectionHeader) {
             UICollectionViewLayoutAttributes *headerAttributes = itemAttributes;
             if ([self shouldStickHeaderToTopInSection:headerAttributes.indexPath.section]) {
-                CGPoint contentOffset = self.collectionView.contentOffset;
-                CGPoint originInCollectionView=CGPointMake(headerAttributes.frame.origin.x-contentOffset.x, headerAttributes.frame.origin.y-contentOffset.y);
-                originInCollectionView.y-=self.collectionView.contentInset.top;
                 CGRect frame = headerAttributes.frame;
-                if (originInCollectionView.y<0) {
-                    frame.origin.y+=(originInCollectionView.y*-1);
-                }
-                UICollectionViewLayoutAttributes *sameSectionFooterAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section]];
-                CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
-                if (CGRectGetMaxY(frame)>=maxY) {
-                    frame.origin.y=maxY-frame.size.height;
-                }
-                NSUInteger numberOfSections=[self.collectionView.dataSource numberOfSectionsInCollectionView:self.collectionView];
-                if (numberOfSections>headerAttributes.indexPath.section+1) {
-                    UICollectionViewLayoutAttributes *nextHeaderAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section+1]];
-                    CGFloat maxY=nextHeaderAttributes.frame.origin.y;
-                    if (CGRectGetMaxY(frame)>=maxY) {
-                        frame.origin.y=maxY-frame.size.height;
-                    }
-                }
+                frame = [self correctStickedHeaderFrame:frame relativeToContentOffsetWithHeaderAttributes:headerAttributes];
+                frame = [self correctStickedHeaderFrame:frame relativeToSameSectionFooterWithHeaderAttributes:headerAttributes];
+                frame = [self correctStickedHeaderFrame:frame relativeToNextSectionHeaderWithHeaderAttributes:headerAttributes];
+                frame = [self correctStickedHeaderFrame:frame relativeToBottomLimitInSameSectionWithHeaderAttributes:headerAttributes];                
                 headerAttributes.frame = frame;
             }
             headerAttributes.zIndex = 1024;
         }
     }
+}
+
+- (CGRect)correctStickedHeaderFrame:(CGRect)frame relativeToContentOffsetWithHeaderAttributes:(UICollectionViewLayoutAttributes *)headerAttributes{
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    CGPoint originInCollectionView=CGPointMake(headerAttributes.frame.origin.x-contentOffset.x, headerAttributes.frame.origin.y-contentOffset.y);
+    originInCollectionView.y-=self.collectionView.contentInset.top;
+    if (originInCollectionView.y<0) {
+        frame.origin.y+=(originInCollectionView.y*-1);
+    }
+    return frame;
+}
+- (CGRect)correctStickedHeaderFrame:(CGRect)frame relativeToSameSectionFooterWithHeaderAttributes:(UICollectionViewLayoutAttributes *)headerAttributes{
+    UICollectionViewLayoutAttributes *sameSectionFooterAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section]];
+    if (sameSectionFooterAttributes) {
+        CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
+        if (CGRectGetMaxY(frame)>=maxY) {
+            frame.origin.y=maxY-frame.size.height;
+        }
+    }
+    return frame;
+}
+- (CGRect)correctStickedHeaderFrame:(CGRect)frame relativeToNextSectionHeaderWithHeaderAttributes:(UICollectionViewLayoutAttributes *)headerAttributes{
+    NSUInteger numberOfSections=[self.collectionView.dataSource numberOfSectionsInCollectionView:self.collectionView];
+    if (numberOfSections>headerAttributes.indexPath.section+1) {
+        UICollectionViewLayoutAttributes *nextHeaderAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section+1]];
+        CGFloat maxY=nextHeaderAttributes.frame.origin.y;
+        if (CGRectGetMaxY(frame)>=maxY) {
+            frame.origin.y=maxY-frame.size.height;
+        }
+    }
+    return frame;
+}
+- (CGRect)correctStickedHeaderFrame:(CGRect)frame relativeToBottomLimitInSameSectionWithHeaderAttributes:(UICollectionViewLayoutAttributes *)headerAttributes{
+    NSUInteger longestColumnIndex = [self longestColumnIndexInSection:headerAttributes.indexPath.section];
+    CGFloat maxYOffsetInSection=[(self.columnHeights[headerAttributes.indexPath.section][longestColumnIndex]) floatValue] + [self insetsForSection:headerAttributes.indexPath.section].bottom;
+    if (CGRectGetMaxY(frame)>=maxYOffsetInSection) {
+        frame.origin.y=maxYOffsetInSection-frame.size.height;
+    }
+    return frame;
 }
 
 - (NSUInteger)totalItemsCountInCollectionView{

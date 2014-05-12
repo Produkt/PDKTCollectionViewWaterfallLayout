@@ -15,6 +15,7 @@ static NSUInteger const kNumberOfColumns = 3;
 static NSUInteger const kItemSpacing = 5.0;
 static NSUInteger const kNumberOfSections = 5;
 static NSUInteger const kNumberItemsPerSection = 10;
+static NSUInteger const kDemoEmptySection = 2;
 @interface CollectionViewManager()
 @property (strong,nonatomic) UINib *cellNib;
 @property (strong,nonatomic) UINib *sectionHeaderNib;
@@ -67,7 +68,7 @@ static NSUInteger const kNumberItemsPerSection = 10;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return section == 2 ? 0 : kNumberItemsPerSection;
+    return section == kDemoEmptySection ? 0 : kNumberItemsPerSection;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -138,6 +139,9 @@ static NSUInteger const kNumberItemsPerSection = 10;
     return kItemSpacing;
 }
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout sectionInsetForSection:(NSUInteger)section{
+    if (section==kDemoEmptySection) {
+        return UIEdgeInsetsZero;
+    }
     return UIEdgeInsetsMake(2, 2, 2, 2);
 }
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout sizeForSupplementaryViewInSection:(NSUInteger)section kind:(NSString *)kind{
