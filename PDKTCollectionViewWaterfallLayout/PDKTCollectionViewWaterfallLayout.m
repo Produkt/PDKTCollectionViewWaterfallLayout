@@ -57,6 +57,9 @@
     [self updateStickedHeadersAttributesInLayoutAttributes:attributes];
     return attributes;
 }
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath{
+    return self.itemAttributes[indexPath.section][indexPath.item];
+}
 - (void)addVisibleItemAttributesToLayoutAttributes:(NSMutableArray *)attributes inRect:(CGRect)rect{
     for (NSArray *itemAttributesArray in self.itemAttributes) {
         NSArray *filteredAttributes=[itemAttributesArray filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(UICollectionViewLayoutAttributes *evaluatedObject, NSDictionary *bindings) {
