@@ -113,9 +113,11 @@
                     frame.origin.y+=(originInCollectionView.y*-1);
                 }
                 UICollectionViewLayoutAttributes *sameSectionFooterAttributes=[self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:[NSIndexPath indexPathForItem:0 inSection:headerAttributes.indexPath.section]];
-                CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
-                if (CGRectGetMaxY(frame)>=maxY) {
-                    frame.origin.y=maxY-frame.size.height;
+                if (sameSectionFooterAttributes) {
+                    CGFloat maxY=sameSectionFooterAttributes.frame.origin.y;
+                    if (CGRectGetMaxY(frame)>=maxY) {
+                        frame.origin.y=maxY-frame.size.height;
+                    }
                 }
                 NSUInteger numberOfSections=[self.collectionView.dataSource numberOfSectionsInCollectionView:self.collectionView];
                 if (numberOfSections>headerAttributes.indexPath.section+1) {
