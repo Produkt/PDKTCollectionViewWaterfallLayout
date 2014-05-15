@@ -261,6 +261,8 @@
         itemHeight=floorf(itemWidth/[self.delegate collectionView:self.collectionView layout:self aspectRatioForIndexPath:indexPath]);
     }else if([self.delegate respondsToSelector:@selector(collectionView:layout:heightItemAtIndexPath:)]){
         itemHeight=floorf([self.delegate collectionView:self.collectionView layout:self heightItemAtIndexPath:indexPath]);
+    }else if ([self.delegate respondsToSelector:@selector(collectionView:layout:heightItemAtIndexPath:withWidth:)]){
+        itemHeight=floorf([self.delegate collectionView:self.collectionView layout:self heightItemAtIndexPath:indexPath withWidth:itemWidth]);
     }else{
         NSAssert(NO, @"PDKTCollectionViewWaterfallLayout : At least one of collectionView:layout:heightItemAtIndexPath: or collectionView:layout:aspectRatioForIndexPath: methods must be implemented by the layout delegate");
     }

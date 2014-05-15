@@ -13,6 +13,7 @@
 @optional
 /// You MUST implement ONE of the two following methods
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout heightItemAtIndexPath:(NSIndexPath *)indexPath;
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout heightItemAtIndexPath:(NSIndexPath *)indexPath withWidth:(CGFloat)cellWidth;
 // Sometimes you would prefer your cells to mantain an specific aspect ratio. In these cases, you and implement the following method and
 // leave PDKTCollectionViewWaterfallLayout do cells size calculations
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(PDKTCollectionViewWaterfallLayout *)collectionViewLayout aspectRatioForIndexPath:(NSIndexPath *)indexPath;
