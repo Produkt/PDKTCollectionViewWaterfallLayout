@@ -310,7 +310,7 @@
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    return YES;
+    return !(CGSizeEqualToSize(newBounds.size, self.collectionView.frame.size));;
 }
 
 #pragma mark - Private Methods
